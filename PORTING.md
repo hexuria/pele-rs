@@ -108,6 +108,17 @@ the SVG upstream gives, and the same error (code, type, line, column, message, s
   members); `lastIndexOf(s, pos)` clamps a negative `pos` to 0 (er's generic types).
 - **Object identity.** Sequence boxes and er/class/state maps compare entries by identity
   (`run.box === box`, `Map` keyed by object); the port keeps indexes into the db's vectors.
+- **Jison positions** (agentflow tokens, which place metadata errors): after a line break the
+  column stops at the first U+2028/U+2029. The lexer also keeps Jison's `\r` counting, which
+  `render()` never reaches (preprocessing turns every `\r` into `\n`).
+- **Brace trimming differs per type:** flowchart replaces `}\s*\n`, agentflow `}[^\S\n]*\n`.
+  Agentflow's comments are tokens, so a parse error at EOF backs up over trailing comment,
+  newline and space tokens before `trimEnd()`.
+- **Agentflow ids:** `addVertex` on an id that names an edge returns early, so no node is made
+  and edges to it are not drawn. A bare `flow` has no title object, and `labelType(undefined)`
+  is `markdown`. Statement values land in a flow's member list: `;`, an `accTitle` text, an empty
+  connector id. A metadata `shape` that is not a string is reported with `JSON.stringify`
+  (`No such shape: [1,2].`); a falsy document (`""`, `0`, `false`) is skipped like none.
 
 ## Adding a diagram type
 
@@ -135,7 +146,11 @@ the SVG upstream gives, and the same error (code, type, line, column, message, s
   width, so the down-running drawings (`verticalCauses`, `verticalEventModel`, folded railroad
   sequences) are never reached and are not ported.
 - **Flowchart variants:** `flowchart/render.rs` has the `FlowVariant` hook (`prepare`, `layout`,
-  `draw_group`, `filled_box`) for swimlane, agentflow, eventmodeling and wardley.
+  `draw_group`, `filled_box`) for swimlane, eventmodeling and wardley. Agentflow is not one: it
+  has its own lexer, parser, db and renderer, and shares the flowchart's shape tables, the
+  lexer's regex matchers (`flowchart::lexer::Lx`), the label/text/document types and the svg and
+  layout modules. Its mappings, diagnostics and semantic model are not ported: nothing drawn
+  reads them.
 - The Scene and Rox's `app/src/mermaid/draw.rs` cover the 11 elements plus `title`, `desc`,
   `image` and a nested `svg` (icons). Other types may write attributes `draw.rs` does not
   know yet: extend its "every input translates" test (it uses `pele::corpus`) as they land.
