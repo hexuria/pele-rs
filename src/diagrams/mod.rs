@@ -3,6 +3,7 @@
 
 pub mod common;
 pub mod flowchart;
+pub mod ishikawa;
 
 use crate::errors::PeleError;
 use crate::preprocess::Config;
@@ -23,7 +24,7 @@ pub struct Diagram {
 }
 
 /// Every ported diagram type.
-pub static ALL: &[&Diagram] = &[&flowchart::DIAGRAM];
+pub static ALL: &[&Diagram] = &[&flowchart::DIAGRAM, &ishikawa::DIAGRAM];
 
 pub fn diagram(type_: &str) -> Option<&'static Diagram> {
     ALL.iter().copied().find(|d| d.type_ == type_)
