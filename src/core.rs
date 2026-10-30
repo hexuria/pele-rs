@@ -18,7 +18,7 @@ pub const DEFAULT_MAX_EDGES: usize = 5000;
 
 /// The diagram types this port renders (the types in `diagrams::ALL`). Any other type that
 /// upstream renders is a `NotYetPorted` error, for the host to draw some other way.
-pub const PORTED: &[&str] = &["flowchart", "ishikawa", "cynefin"];
+pub const PORTED: &[&str] = &["flowchart", "ishikawa", "cynefin", "venn"];
 
 fn tag(mut error: PeleError, type_: &str, mermaid_type: &str) -> PeleError {
     if error.type_.is_none() {
