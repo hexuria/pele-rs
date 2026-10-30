@@ -40,3 +40,44 @@ fn flowchart_sample_render_times() {
         println!("| {} | {:.3} | {:.3} | {:.3} |", name, m, p95, pm);
     }
 }
+
+// Median render time per ported type, over the golden inputs that render: each input's median
+// over 20 runs, then the median of those.
+//   PELE_PERF=venn,usecase cargo test --release --test perf -- --ignored --nocapture
+#[test]
+#[ignore]
+fn ported_type_render_times() {
+    let only = std::env::var("PELE_PERF").ok();
+    println!("| type | inputs | median ms | slowest input median ms |");
+    println!("|---|---:|---:|---:|");
+    for ty in pele::PORTED {
+        if only.as_ref().is_some_and(|o| !o.split(',').any(|t| t == *ty)) {
+            continue;
+        }
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(format!("tests/golden/{ty}.jsonl"));
+        let jsonl = std::fs::read_to_string(path).unwrap();
+        let mut medians = Vec::new();
+        for line in jsonl.lines().filter(|l| !l.is_empty()) {
+            let row = pele::util::json::parse_json(line).unwrap();
+            let m = row.as_map().unwrap();
+            if m.get("error").is_some() {
+                continue;
+            }
+            let code = m.get("mmd").unwrap().js_string();
+            let _ = pele::render(&code);
+            let mut times = Vec::new();
+            for _ in 0..20 {
+                let t = Instant::now();
+                let _ = pele::render(&code).unwrap();
+                times.push(t.elapsed().as_secs_f64() * 1000.0);
+            }
+            medians.push(stats(times).0);
+        }
+        if medians.is_empty() {
+            continue;
+        }
+        let slowest = medians.iter().cloned().fold(0.0, f64::max);
+        let n = medians.len();
+        println!("| {} | {} | {:.3} | {:.3} |", ty, n, stats(medians).0, slowest);
+    }
+}
