@@ -71,6 +71,32 @@ pub fn round(x: f64) -> f64 {
     }
 }
 
+/// `Math.hypot(a, b)` as V8 computes it: scaled by the larger value, with Kahan summation. Rust's
+/// `f64::hypot` can differ in the last bit.
+pub fn hypot(a: f64, b: f64) -> f64 {
+    if a.is_infinite() || b.is_infinite() {
+        return f64::INFINITY;
+    }
+    if a.is_nan() || b.is_nan() {
+        return f64::NAN;
+    }
+    let (a, b) = (a.abs(), b.abs());
+    let max = a.max(b);
+    if max == 0.0 {
+        return 0.0;
+    }
+    let mut sum = 0.0;
+    let mut compensation = 0.0;
+    for v in [a, b] {
+        let n = v / max;
+        let summand = n * n - compensation;
+        let preliminary = sum + summand;
+        compensation = (preliminary - summand) - sum;
+        sum = preliminary;
+    }
+    sum.sqrt() * max
+}
+
 /// Whitespace as JS `\s` and `trim()` see it, for one UTF-16 code unit.
 pub fn is_space_u(c: u32) -> bool {
     if c < 128 {

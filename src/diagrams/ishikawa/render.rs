@@ -28,7 +28,7 @@ const BOX_PAD_X: f64 = 10.0;
 const BOX_PAD_Y: f64 = 5.0;
 
 fn length() -> f64 {
-    SLANT.hypot(1.0)
+    js::hypot(SLANT, 1.0)
 }
 
 // A cause below a category. Bones at even depths run level, from the slanted bone above them
