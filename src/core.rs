@@ -46,6 +46,7 @@ pub const PORTED: &[&str] = &[
     "railroad",
     "usecase",
     "treeView",
+    "gitGraph",
 ];
 
 fn tag(mut error: PeleError, type_: &str, mermaid_type: &str) -> PeleError {

@@ -7,6 +7,7 @@ pub mod cynefin;
 pub mod er;
 pub mod eventmodeling;
 pub mod flowchart;
+pub mod git;
 pub mod info;
 pub mod ishikawa;
 pub mod journey;
@@ -77,6 +78,7 @@ pub static ALL: &[&Diagram] = &[
     &railroad::DIAGRAM,
     &usecase::DIAGRAM,
     &treeview::DIAGRAM,
+    &git::DIAGRAM,
 ];
 
 pub fn diagram(type_: &str) -> Option<&'static Diagram> {
