@@ -1,6 +1,7 @@
 // The diagram types, as upstream's src/diagrams, and the part of src/types.ts's `Diagram` and
 // src/diagrams/registry.ts the port uses. A type that is not in ALL is not ported yet.
 
+pub mod agentflow;
 pub mod block;
 pub mod c4;
 pub mod class;
@@ -85,6 +86,7 @@ pub static ALL: &[&Diagram] = &[
     &gantt::DIAGRAM,
     &block::DIAGRAM,
     &c4::DIAGRAM,
+    &agentflow::DIAGRAM,
 ];
 
 pub fn diagram(type_: &str) -> Option<&'static Diagram> {

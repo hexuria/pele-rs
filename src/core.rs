@@ -50,6 +50,7 @@ pub const PORTED: &[&str] = &[
     "gantt",
     "block",
     "c4",
+    "agentflow",
 ];
 
 fn tag(mut error: PeleError, type_: &str, mermaid_type: &str) -> PeleError {
