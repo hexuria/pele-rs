@@ -71,6 +71,29 @@ the SVG upstream gives, and the same error (code, type, line, column, message, s
   over the text recovers.
 - **`new URL()`** is the `url` crate (WHATWG): `https://example.com` becomes
   `https://example.com/`. `decodeURIComponent` throws on bad UTF-8 or stray `%`.
+- **`toFixed` / `toPrecision` / `toExponential`** round the exact binary value half up (the
+  spec picks the larger candidate); Rust's `{:.N}` breaks ties to even. Use `js::to_fixed`,
+  `js::to_precision`, `js::to_exponential` (pie percentages, treemap's d3-format subset).
+- **`Array.prototype.sort()` with no comparator** orders strings by UTF-16 code units, not by
+  UTF-8 bytes (journey's actors): sort by `encode_utf16()`.
+- **A `Map` key set again keeps its first place** (gitGraph's commits when an id repeats): use
+  an ordered list with replace-in-place, not remove-and-push.
+- **Local time.** gantt works on JS `Date`s in the host's time zone. `gantt/clock.rs` gets the
+  UTC offset of an instant from `localtime_r` (the same `TZ` Node reads) and turns local fields
+  back into a time value with the offset in force *before* a transition, for times in a gap or
+  an overlap (V8 with ICU's FORMER rule). `new Date(string)`, gantt's fallback parse, reads only
+  the ECMAScript date-time format (`gantt/parse_date.rs`); V8's legacy formats read as invalid.
+  The goldens were checked under `Asia/Manila` and, regenerated, under `America/New_York`.
+- **The clock.** gantt reads the current time at render, as upstream does with no `now` option:
+  a task with no start begins today, a `dateFormat` without a date (`HH:mm`) takes today's, and
+  the today marker shows when now falls inside the chart. Goldens that hit these depend on when
+  they are run, upstream as here (`gantt-docs-005`, `-006` draw the marker between 17:49 and
+  18:12 local time).
+- **No `idPrefix`**: sankey's gradients need a non-empty one (`/^[\w-]+$/`), so links are always
+  painted flat.
+- **No `maxWidth`**: the down/tight drawings (mindmap's outline, journey's and timeline's
+  columns, packet's narrow rows, treeView's wrapped labels, kanban's folded board) are never
+  reached and were not ported.
 - **`JSON.parse`** for `%%{init}%%`: strict JSON after `'` → `"`; anything else is ignored.
 - **Past the end of a string** `charCodeAt` is NaN. Most tests on it are false (`isSpace`,
   `isWord`, `=== c`), but not all: the sequence lexer's `has()` falls through to its non-ASCII
