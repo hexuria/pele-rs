@@ -63,21 +63,30 @@ the SVG upstream gives, and the same error (code, type, line, column, message, s
   `https://example.com/`. `decodeURIComponent` throws on bad UTF-8 or stray `%`.
 - **`JSON.parse`** for `%%{init}%%`: strict JSON after `'` → `"`; anything else is ignored.
 
-## What phase 2 needs
+## Adding a diagram type
 
-- Goldens: add the types to `PORTED` in `tools/golden.mjs` and rerun it (it writes
-  `tests/golden/<type>.jsonl` for every ported type; `--all` writes every type to the
-  gitignored `tests/golden-all/` for a look).
-- `core.rs`: per-type `Diagram` dispatch (today it calls flowchart directly), `keepComments`
-  with `lineOffset` (sequence, state, … report positions in the text with comments kept), the
-  config `section` name for `useMaxWidth`, and math for the types with `math: true`.
-- Shared modules not yet ported: `diagrams/common/*` (tokens, accDescr, scan, outline,
-  literal-label, fit, fit-text, fit-width, generics, caseless, icon), `svg/title.ts`'s
-  `withTitle`, `text/label.ts`'s `labelLine`/`lineMiddle`/`withHeights`/`hasMath`, and
-  `layout/lanes.ts`, `layout/components.ts`.
-- Phase 3: swimlane, agentflow, eventmodeling and wardley draw through `renderFlowchart` with
-  a `FlowVariant` (their own layout and group drawing); the flowchart renderer here has no
-  variant hook yet.
+- **Registry.** `diagrams/mod.rs` has `Diagram` (upstream's `types.ts` interface: `type_`,
+  `section`, `keep_comments`, `parse`, `render`) and `ALL`, the registered types. A type adds
+  its `pub static DIAGRAM` there and its name to `PORTED` in `core.rs` (a test checks the two
+  agree) and in `tools/golden.mjs`, then reruns the script for its goldens.
+- **What `core.rs` already does**: `keepComments` (the text with `%%` lines kept, and source
+  positions mapped through the same edits), `lineOffset` (the front matter lines removed),
+  `useMaxWidth: false` in the type's config section (`section`, else its type name) giving
+  `RenderOptions { responsive: false }`, and error tagging. Math is off (no resolver), so a
+  type's `math: true` changes nothing.
+- **Shared modules, ported:** `diagrams/common/*` (`tokens`, `acc_descr`, `scan`, `outline`,
+  `literal_label`, `fit`, `fit_text`, `fit_width`, `generics`, `caseless`, `icon`),
+  `svg/title.rs`'s `with_title`, `text/label.rs`'s `label_line`/`line_middle`/`with_heights`/
+  `has_math` (with no math: no `heights`), `layout/lanes.rs`, `layout/components.rs`.
+  - `common/tokens.rs`: upstream's sticky regular expressions are `Matcher` closures
+    (`Rc<dyn Fn(&[u16], usize) -> Option<usize>>`); the shared terminals (`acc_descr()`,
+    `title()`, `title_before(rest)`, `string()`, `yaml()`, `directive()`, `keyword(word)`, …)
+    are functions that build a `TokenType`. `longer` holds indexes into the same table.
+    `title_before` takes the lookahead as a predicate.
+  - `common/fit_width.rs`: with no `maxWidth`, every fitting step draws once at the natural
+    width; the functions keep upstream's shape so renderers port line for line.
+- **Flowchart variants:** `flowchart/render.rs` has the `FlowVariant` hook (`prepare`, `layout`,
+  `draw_group`, `filled_box`) for swimlane, agentflow, eventmodeling and wardley.
 - The Scene and Rox's `app/src/mermaid/draw.rs` cover the 11 elements plus `title`, `desc`,
   `image` and a nested `svg` (icons). Other types may write attributes `draw.rs` does not
-  know yet: extend its "every golden translates" test to their goldens as they land.
+  know yet: extend its "every input translates" test (it uses `pele::corpus`) as they land.

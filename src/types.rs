@@ -24,3 +24,17 @@ pub struct RenderResult {
     pub height: f64,
     pub links: Vec<LinkInfo>,
 }
+
+/// The render options a diagram reads. The host passes none, so every other option of
+/// upstream's `RenderOptions` is at its default (see PORTING.md).
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct RenderOptions {
+    // False when the type's config section sets `useMaxWidth: false`.
+    pub responsive: bool,
+}
+
+impl Default for RenderOptions {
+    fn default() -> Self {
+        RenderOptions { responsive: true }
+    }
+}

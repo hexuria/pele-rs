@@ -522,3 +522,23 @@ fn layout_lines(raw: &str, markdown: bool, size: f64, max_width: f64, base: u32,
     let snug = if lines.len() > 1 { js::round(size * WRAPPED_LINE_HEIGHT) } else { line_height };
     Label { height: lines.len() as f64 * snug, lines, widths, width, size, line_height: snug }
 }
+
+// With no math resolver no span is math, so every line is `line_height` tall: `withHeights`
+// returns the label as it is, and the helpers below take upstream's no-`heights` branch.
+
+pub fn with_heights(label: Label) -> Label {
+    label
+}
+
+pub fn has_math(_line: &[Span]) -> bool {
+    false
+}
+
+pub fn line_middle(label: &Label, i: usize) -> f64 {
+    (i as f64 + 0.5) * label.line_height
+}
+
+pub fn label_line(label: &Label, i: usize) -> Label {
+    let width = label.widths[i];
+    Label { lines: vec![label.lines[i].clone()], widths: vec![width], width, height: label.line_height, size: label.size, line_height: label.line_height }
+}

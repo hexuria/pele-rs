@@ -9,9 +9,10 @@ pub mod shapes;
 pub mod tokens;
 pub mod types;
 
+use crate::diagrams::Diagram;
 use crate::errors::PeleError;
 use crate::preprocess::Config;
-use crate::types::Rendered;
+use crate::types::{RenderOptions, Rendered};
 use crate::util::yaml::Value;
 use db::{FlowDb, FlowDbOptions};
 
@@ -25,6 +26,14 @@ pub fn parse(source: &[u16], config: &Config, title: Option<&str>) -> Result<Flo
     Ok(db)
 }
 
-pub fn render(db: &FlowDb, config: &Config) -> Rendered {
-    render::render_flowchart(db, config)
+pub fn render(db: &FlowDb, config: &Config, options: &RenderOptions) -> Rendered {
+    render::render_flowchart(db, config, options, None)
 }
+
+pub static DIAGRAM: Diagram = Diagram {
+    type_: "flowchart",
+    section: None,
+    keep_comments: false,
+    parse: |source, config, title, _line_offset| Ok(Box::new(parse(source, config, title)?)),
+    render: |model, config, options| Ok(render(model.downcast_ref::<FlowDb>().unwrap(), config, options)),
+};
