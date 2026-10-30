@@ -13,6 +13,7 @@ pub mod kanban;
 pub mod mindmap;
 pub mod packet;
 pub mod pie;
+pub mod quadrant;
 pub mod radar;
 pub mod swimlane;
 pub mod timeline;
@@ -38,7 +39,7 @@ pub struct Diagram {
 }
 
 /// Every ported diagram type.
-pub static ALL: &[&Diagram] = &[&flowchart::DIAGRAM, &er::DIAGRAM, &ishikawa::DIAGRAM, &cynefin::DIAGRAM, &venn::DIAGRAM, &swimlane::DIAGRAM, &eventmodeling::DIAGRAM, &wardley::DIAGRAM, &info::DIAGRAM, &pie::DIAGRAM, &radar::DIAGRAM, &packet::DIAGRAM, &mindmap::DIAGRAM, &kanban::DIAGRAM, &journey::DIAGRAM, &timeline::DIAGRAM];
+pub static ALL: &[&Diagram] = &[&flowchart::DIAGRAM, &er::DIAGRAM, &ishikawa::DIAGRAM, &cynefin::DIAGRAM, &venn::DIAGRAM, &swimlane::DIAGRAM, &eventmodeling::DIAGRAM, &wardley::DIAGRAM, &info::DIAGRAM, &pie::DIAGRAM, &radar::DIAGRAM, &packet::DIAGRAM, &mindmap::DIAGRAM, &kanban::DIAGRAM, &journey::DIAGRAM, &timeline::DIAGRAM, &quadrant::DIAGRAM];
 
 pub fn diagram(type_: &str) -> Option<&'static Diagram> {
     ALL.iter().copied().find(|d| d.type_ == type_)
