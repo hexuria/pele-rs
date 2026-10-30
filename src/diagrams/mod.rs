@@ -24,6 +24,7 @@ pub mod state;
 pub mod swimlane;
 pub mod timeline;
 pub mod treemap;
+pub mod treeview;
 pub mod usecase;
 pub mod venn;
 pub mod wardley;
@@ -75,6 +76,7 @@ pub static ALL: &[&Diagram] = &[
     &requirement::DIAGRAM,
     &railroad::DIAGRAM,
     &usecase::DIAGRAM,
+    &treeview::DIAGRAM,
 ];
 
 pub fn diagram(type_: &str) -> Option<&'static Diagram> {
