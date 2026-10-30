@@ -19,6 +19,7 @@ pub mod swimlane;
 pub mod timeline;
 pub mod venn;
 pub mod wardley;
+pub mod xychart;
 
 use crate::errors::PeleError;
 use crate::preprocess::Config;
@@ -39,7 +40,7 @@ pub struct Diagram {
 }
 
 /// Every ported diagram type.
-pub static ALL: &[&Diagram] = &[&flowchart::DIAGRAM, &er::DIAGRAM, &ishikawa::DIAGRAM, &cynefin::DIAGRAM, &venn::DIAGRAM, &swimlane::DIAGRAM, &eventmodeling::DIAGRAM, &wardley::DIAGRAM, &info::DIAGRAM, &pie::DIAGRAM, &radar::DIAGRAM, &packet::DIAGRAM, &mindmap::DIAGRAM, &kanban::DIAGRAM, &journey::DIAGRAM, &timeline::DIAGRAM, &quadrant::DIAGRAM];
+pub static ALL: &[&Diagram] = &[&flowchart::DIAGRAM, &er::DIAGRAM, &ishikawa::DIAGRAM, &cynefin::DIAGRAM, &venn::DIAGRAM, &swimlane::DIAGRAM, &eventmodeling::DIAGRAM, &wardley::DIAGRAM, &info::DIAGRAM, &pie::DIAGRAM, &radar::DIAGRAM, &packet::DIAGRAM, &mindmap::DIAGRAM, &kanban::DIAGRAM, &journey::DIAGRAM, &timeline::DIAGRAM, &quadrant::DIAGRAM, &xychart::DIAGRAM];
 
 pub fn diagram(type_: &str) -> Option<&'static Diagram> {
     ALL.iter().copied().find(|d| d.type_ == type_)
