@@ -72,6 +72,19 @@ the SVG upstream gives, and the same error (code, type, line, column, message, s
 - **`new URL()`** is the `url` crate (WHATWG): `https://example.com` becomes
   `https://example.com/`. `decodeURIComponent` throws on bad UTF-8 or stray `%`.
 - **`JSON.parse`** for `%%{init}%%`: strict JSON after `'` → `"`; anything else is ignored.
+- **Past the end of a string** `charCodeAt` is NaN. Most tests on it are false (`isSpace`,
+  `isWord`, `=== c`), but not all: the sequence lexer's `has()` falls through to its non-ASCII
+  branch and answers true there. The lexers read past the end as `u32::MAX` and keep each
+  test's answer for NaN.
+- **`Math.sign(0)` is 0**; `f64::signum(0.0)` is 1. Renderers that scale by a sign use a local
+  `sign()`.
+- **`Object.assign(existing, node)`** copies properties set to `undefined` too, but not ones
+  that were never set: state's graph keeps a node's `parentId`, `position` and `noteFor` only
+  where the new node lacks the property.
+- **`String.prototype.substring`** swaps its ends when the start is past the end (class
+  members); `lastIndexOf(s, pos)` clamps a negative `pos` to 0 (er's generic types).
+- **Object identity.** Sequence boxes and er/class/state maps compare entries by identity
+  (`run.box === box`, `Map` keyed by object); the port keeps indexes into the db's vectors.
 
 ## Adding a diagram type
 
