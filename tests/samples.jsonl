@@ -1,0 +1,63 @@
+{"name":"agentflow","mmd":"agentflow-beta\n  a[Planner]\n  b[Coder]\n  a --> b\n"}
+{"name":"architecture","mmd":"architecture-beta\n  group api(cloud)[API]\n  service db(database)[DB] in api\n  service srv(server)[Server] in api\n  db:L -- R:srv\n  junction j\n"}
+{"name":"block","mmd":"block-beta\n  columns 3\n  a[\"Wide\"]:2\n  b\n  block:grp:2\n    c\n    d\n  end\n"}
+{"name":"c4","mmd":"C4Context\n  title Sys\n  Person(u, \"User\", \"A user\")\n  System(s, \"App\", \"The app\")\n  Rel(u, s, \"Uses\")\n  Boundary(b, \"Bnd\") {\n    System(x, \"X\")\n  }\n"}
+{"name":"class-basic","mmd":"classDiagram\n  class Animal {\n    +String name\n    +eat() void\n    -int age$\n  }\n  class Duck\n  Animal <|-- Duck\n  Animal *-- Leg : has\n  Duck o-- Pond\n  Duck --> Egg\n  Duck ..> Water : uses\n  Animal \"1\" -- \"*\" Tree\n"}
+{"name":"class-generics","mmd":"classDiagram\n  class Box~T~ {\n    +T value\n    +get() T\n  }\n  class List~Item~\n  Box~int~ <|-- Stack~int~\n  <<interface>> Box\n  note for Box \"generic box\"\n"}
+{"name":"class-namespace","mmd":"classDiagram\n  namespace Shapes {\n    class Circle\n  }\n  Circle <|-- Round : extends\n  class Round[\"Round shape\"]\n"}
+{"name":"cynefin","mmd":"cynefin-beta\n  title X\n  clear\n    \"item\"\n"}
+{"name":"er-attrs","mmd":"erDiagram\n  PERSON { int id PK\n    string name }\n  PERSON ||--o{ PET : owns\n  PET { string type }\n"}
+{"name":"er-cardinality","mmd":"erDiagram\n  CUSTOMER ||--o{ ORDER : places\n  ORDER ||--|{ LINE-ITEM : contains\n  PRODUCT |o--o| CATEGORY : in\n  CUSTOMER }|..|{ ADDRESS : uses\n  ORDER }o--o{ TAG : tagged\n  CUSTOMER {\n    string name PK\n    string email UK \"unique\"\n    int id FK \"comment\"\n  }\n"}
+{"name":"err-syntax-flowchart","mmd":"flowchart LR\n  A-->\n  B[unclosed\n"}
+{"name":"err-unsupported","mmd":"hello world\n"}
+{"name":"eventmodeling","mmd":"eventmodeling\n  tf 001 cmd CreateThing\n  tf 002 evt ThingCreated\n"}
+{"name":"fc-basic","mmd":"flowchart LR\n  A[Start] --> B{Ok?}\n  B -->|yes| C[Done]\n  B -.->|no| D(Retry)\n  D --> B\n"}
+{"name":"fc-class-shorthand","mmd":"flowchart TD\n  classDef a fill:#e1f5fe\n  A:::a --> B:::a\n  B-->C:::a\n"}
+{"name":"fc-classdef","mmd":"flowchart LR\n  classDef hot fill:#f96,stroke:#333,stroke-width:4px,color:#000\n  classDef cold fill:#9cf\n  A[Hot]:::hot --> B[Cold]:::cold\n  class B cold\n  style A stroke:#f00,stroke-dasharray:5 5\n  linkStyle 0 stroke:#0f0,stroke-width:3px\n"}
+{"name":"fc-click","mmd":"flowchart LR\n  A[Docs] --> B[Site]\n  click A \"https://example.com\" \"tip\"\n  click B href \"https://example.org\"\n"}
+{"name":"fc-edges","mmd":"flowchart TD\n  a---b\n  b-->c\n  c-.->d\n  d==>e\n  e--text-->f\n  f--o g\n  g--x h\n  h<-->i\n  i-. dotted .->j\n  j== thick ==>k\n"}
+{"name":"fc-elk","mmd":"flowchart-elk LR\n  a-->b\n  b-->c\n  a-->c\n"}
+{"name":"fc-frontmatter","mmd":"---\nconfig:\n  flowchart:\n    curve: linear\n---\nflowchart LR\n  A-->B\n"}
+{"name":"fc-graph-keyword","mmd":"graph TD\n  A-->B\n  B-->A\n"}
+{"name":"fc-html-labels","mmd":"flowchart LR\n  A[Line one<br/>Line two] --> B[<i>x</i> &amp; y]\n"}
+{"name":"fc-icons","mmd":"flowchart LR\n  A[fa:fa-user Person] --> B[logos:aws Cloud]\n  C@{ icon: \"fa:server\", form: \"rounded\", label: \"Server\" } --> A\n"}
+{"name":"fc-init","mmd":"%%{init: {'theme':'base','flowchart':{'curve':'basis'}}}%%\nflowchart LR\n  A-->B\n"}
+{"name":"fc-long","mmd":"flowchart LR\n  A[This is a long label that should wrap across several lines because the wrapping width is small] --> B[short]\n"}
+{"name":"fc-markdown","mmd":"flowchart TD\n  A[\"`**bold** and *italic*`\"] --> B[\"`plain`\"]\n"}
+{"name":"fc-selfloop","mmd":"flowchart TD\n  A-->A\n  A-->B\n  B-->A\n"}
+{"name":"fc-shapes","mmd":"flowchart TD\n  a[rect] --> b(round) --> c([stadium]) --> d[[subroutine]]\n  e[(cylinder)] --> f((circle)) --> g>asym] --> h{diamond}\n  i{{hexagon}} --> j[/lean-r/] --> k[\\lean-l\\] --> l[/trap\\]\n  m(((doublecircle)))\n"}
+{"name":"fc-subgraph","mmd":"flowchart TB\n  subgraph one [First group]\n    a1-->a2\n  end\n  subgraph two\n    b1-->b2\n  end\n  a2-->b1\n"}
+{"name":"fc-unicode","mmd":"flowchart TD\n  a[日本語のラベル] --> b[emoji 🚀 & ünïcödé]\n"}
+{"name":"gantt-basic","mmd":"gantt\n  title Plan\n  dateFormat YYYY-MM-DD\n  axisFormat %m/%d\n  section Build\n  Design :done, d1, 2024-01-01, 5d\n  Code :active, c1, after d1, 10d\n  Test :crit, t1, after c1, 3d\n  Ship :milestone, m1, after t1, 0d\n"}
+{"name":"gantt-excludes","mmd":"gantt\n  dateFormat YYYY-MM-DD\n  excludes weekends\n  section X\n  A :a1, 2024-01-05, 4d\n"}
+{"name":"gitgraph","mmd":"gitGraph\n  commit id: \"a\"\n  branch dev\n  checkout dev\n  commit id: \"b\" tag: \"v1\"\n  checkout main\n  merge dev\n  commit type: HIGHLIGHT\n  branch feat\n  commit\n  cherry-pick id: \"b\"\n"}
+{"name":"info","mmd":"info\n  showInfo\n"}
+{"name":"ishikawa","mmd":"ishikawa-beta\n  Effect\n  Cause A\n    sub1\n"}
+{"name":"journey","mmd":"journey\n  title My day\n  section Morning\n    Coffee: 5: Me\n    Commute: 2: Me, Cat\n  section Work\n    Code: 4: Me\n"}
+{"name":"kanban","mmd":"kanban\n  Todo\n    t1[Write docs]@{ priority: 'High' }\n  Doing\n    t2[Code]\n"}
+{"name":"mindmap","mmd":"mindmap\n  root((Central))\n    Origin\n      Two\n    Other[square]\n      ::icon(fa fa-book)\n      deep\n"}
+{"name":"packet","mmd":"packet-beta\n  0-15: \"Source Port\"\n  16-31: \"Dest Port\"\n  32-63: \"Sequence\"\n"}
+{"name":"pie","mmd":"pie showData title Pets\n  \"Dogs\" : 386\n  \"Cats\" : 85\n  \"Rats\" : 15\n"}
+{"name":"quadrant","mmd":"quadrantChart\n  title Reach\n  x-axis Low --> High\n  y-axis Bad --> Good\n  quadrant-1 Expand\n  quadrant-2 Promote\n  A: [0.3, 0.6]\n  B: [0.45, 0.2]\n"}
+{"name":"radar","mmd":"radar-beta\n  title Skills\n  axis a[\"Alpha\"], b[\"Beta\"], c[\"Gamma\"]\n  curve x[\"Team\"]{1,2,3}\n  max 5\n"}
+{"name":"railroad-abnf","mmd":"railroad-abnf-beta\n  x = \"a\" ;\n"}
+{"name":"railroad-ebnf","mmd":"railroad-ebnf-beta\n  x = \"a\" ;\n"}
+{"name":"railroad-peg","mmd":"railroad-peg-beta\n  x <- \"a\" ;\n"}
+{"name":"railroad","mmd":"railroad-beta\n  title R\n  x = \"a\"\n"}
+{"name":"requirement","mmd":"requirementDiagram\n  requirement test_req {\n    id: 1\n    text: the test\n    risk: high\n    verifymethod: test\n  }\n  element el {\n    type: simulation\n  }\n  el - satisfies -> test_req\n"}
+{"name":"sankey-quoted-err","mmd":"sankey-beta\n  \"Quoted, name\",Food,10\n"}
+{"name":"sankey","mmd":"sankey-beta\n  Agricultural,Food,20\n  Food,Waste,5\n"}
+{"name":"seq-basic","mmd":"sequenceDiagram\n  participant A as Alice\n  actor B as Bob\n  A->>B: Hello\n  B-->>A: Hi\n  A-)B: async\n  A-xB: lost\n  Note right of B: a note\n  Note over A,B: over both\n"}
+{"name":"seq-blocks","mmd":"sequenceDiagram\n  autonumber\n  A->>B: start\n  loop Every minute\n    B->>A: ping\n  end\n  alt ok\n    A->>B: yes\n  else no\n    A->>B: no\n  end\n  opt maybe\n    A->>B: opt\n  end\n  par p1\n    A->>B: one\n  and p2\n    A->>C: two\n  end\n  critical c\n    A->>B: crit\n  option o\n    A->>B: opt\n  end\n  break stop\n    A->>B: break\n  end\n  rect rgb(200,220,255)\n    A->>B: in rect\n  end\n  activate B\n  B->>A: act\n  deactivate B\n"}
+{"name":"seq-box","mmd":"sequenceDiagram\n  box Aqua Group\n    participant A\n    participant B\n  end\n  A->>B: x\n"}
+{"name":"state-choice-note","mmd":"stateDiagram-v2\n  state choice1 <<choice>>\n  [*] --> choice1\n  choice1 --> X : yes\n  choice1 --> Y : no\n  note right of X\n    a note\n  end note\n  classDef hot fill:#f96\n  class X hot\n"}
+{"name":"state-composite","mmd":"stateDiagram-v2\n  [*] --> Still\n  Still --> [*]\n  Still --> Moving : go\n  Moving --> Still\n  state Moving {\n    [*] --> Fast\n    Fast --> Slow\n  }\n  state fork_state <<fork>>\n  state join_state <<join>>\n  [*] --> fork_state\n  fork_state --> A\n  fork_state --> B\n  A --> join_state\n  B --> join_state\n  join_state --> [*]\n"}
+{"name":"state-concurrent","mmd":"stateDiagram-v2\n  state Active {\n    [*] --> P\n    --\n    [*] --> Q\n  }\n"}
+{"name":"swimlane","mmd":"swimlane-beta\n  A\n    step1\n"}
+{"name":"timeline","mmd":"timeline\n  title History\n  2002 : LinkedIn\n  2004 : Facebook : Google\n  section Later\n  2010 : Instagram\n"}
+{"name":"treemap","mmd":"treemap-beta\n  \"Root\"\n    \"A\": 10\n    \"B\": 20\n"}
+{"name":"treeview","mmd":"treeView-beta\n  \"root\"\n    \"child\"\n"}
+{"name":"usecase","mmd":"usecase-beta\n  User -- Login\n"}
+{"name":"venn","mmd":"venn-beta\n  set A[\"Alpha\"]\n  set B\n  union A,B[\"AB\"]\n"}
+{"name":"wardley","mmd":"wardley-beta\n  title Map\n  component User [0.9, 0.2]\n"}
+{"name":"xychart","mmd":"xychart-beta\n  title \"Sales\"\n  x-axis [jan, feb, mar]\n  y-axis \"Revenue\" 0 --> 100\n  bar [10, 50, 80]\n  line [20, 40, 60]\n"}

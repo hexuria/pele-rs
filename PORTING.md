@@ -65,8 +65,9 @@ the SVG upstream gives, and the same error (code, type, line, column, message, s
 
 ## What phase 2 needs
 
-- Goldens: add the types to `PORTED` in `tools/golden.mjs` and rerun it (it writes every
-  corpus input of a ported type; `--all` writes all ~26 MB for a look).
+- Goldens: add the types to `PORTED` in `tools/golden.mjs` and rerun it (it writes
+  `tests/golden/<type>.jsonl` for every ported type; `--all` writes every type to the
+  gitignored `tests/golden-all/` for a look).
 - `core.rs`: per-type `Diagram` dispatch (today it calls flowchart directly), `keepComments`
   with `lineOffset` (sequence, state, … report positions in the text with comments kept), the
   config `section` name for `useMaxWidth`, and math for the types with `math: true`.

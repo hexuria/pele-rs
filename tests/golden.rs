@@ -1,5 +1,6 @@
 // Compares the port with upstream Pele, byte for byte, on every golden of a ported type (and
-// every input no detector matches). The goldens come from tools/golden.mjs.
+// every input no detector matches). The goldens come from tools/golden.mjs: one JSONL per type,
+// tests/golden/<type>.jsonl.
 //
 // PELE_GOLDEN=<name> limits the run to inputs whose name contains <name>.
 
@@ -26,20 +27,19 @@ fn first_diff(a: &str, b: &str) -> String {
     format!("at byte {}\n  want: {}\n  got:  {}", at, cut(a), cut(b))
 }
 
-fn check(dir: &Path, failures: &mut Vec<String>) -> usize {
+fn check(file: &Path, failures: &mut Vec<String>) -> usize {
     let filter = std::env::var("PELE_GOLDEN").ok();
-    let mut names: Vec<_> = fs::read_dir(dir).unwrap().filter_map(|e| e.ok()).map(|e| e.path()).filter(|p| p.extension().is_some_and(|x| x == "mmd")).collect();
-    names.sort();
+    let text = fs::read_to_string(file).unwrap_or_else(|e| panic!("{}: {e}", file.display()));
     let mut count = 0;
-    for path in names {
-        let name = path.file_stem().unwrap().to_string_lossy().to_string();
+    for line in text.lines().filter(|l| !l.is_empty()) {
+        let row = parse_json(line).unwrap();
+        let want = row.as_map().unwrap();
+        let name = want.get("name").unwrap().js_string();
         if filter.as_ref().is_some_and(|f| !name.contains(f.as_str())) {
             continue;
         }
         count += 1;
-        let code = fs::read_to_string(&path).unwrap();
-        let json = parse_json(&fs::read_to_string(path.with_extension("json")).unwrap()).unwrap();
-        let want = json.as_map().unwrap();
+        let code = want.get("mmd").unwrap().js_string();
         let got = std::panic::catch_unwind(|| render(&code));
         let got = match got {
             Ok(g) => g,
@@ -50,7 +50,7 @@ fn check(dir: &Path, failures: &mut Vec<String>) -> usize {
         };
         match (want.get("error"), got) {
             (None, Ok(r)) => {
-                let svg = fs::read_to_string(path.with_extension("svg")).unwrap();
+                let svg = want.get("svg").unwrap().js_string();
                 if r.svg != svg {
                     failures.push(format!("{}: svg differs {}", name, first_diff(&svg, &r.svg)));
                     continue;
@@ -113,7 +113,7 @@ fn goldens_match_upstream_byte_for_byte() {
     let mut failures = Vec::new();
     let mut total = 0;
     for ty in PORTED.iter().copied().chain(["none"]) {
-        total += check(&root.join(ty), &mut failures);
+        total += check(&root.join(format!("{ty}.jsonl")), &mut failures);
     }
     for f in failures.iter().take(40) {
         eprintln!("{}\n", f);

@@ -3,7 +3,7 @@ The `pele` crate is a Rust port of Pele, a Mermaid renderer:
   https://github.com/obsidianmd/pele
   Pinned commit: 36e584d59152181927e0d8bf70fddcd2a5f33d6c (1.12.0-8-g36e584d)
 
-The test inputs under tests/golden were extracted from Pele's tests/compat specs
+The test inputs in tests/golden/*.jsonl were extracted from Pele's tests/compat specs
 (themselves ported from Mermaid, MIT) and tests/corpus docs; the golden SVGs are
 Pele's output at the pinned commit (see tools/golden.mjs).
 

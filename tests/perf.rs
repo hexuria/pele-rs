@@ -11,13 +11,19 @@ fn stats(mut t: Vec<f64>) -> (f64, f64) {
 #[test]
 #[ignore]
 fn flowchart_sample_render_times() {
-    let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/samples");
-    let mut names: Vec<_> = std::fs::read_dir(dir).unwrap().flatten().map(|e| e.path()).filter(|p| p.file_name().unwrap().to_string_lossy().starts_with("fc-")).collect();
-    names.sort();
+    let jsonl = std::fs::read_to_string(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/samples.jsonl")).unwrap();
+    let samples: Vec<(String, String)> = jsonl
+        .lines()
+        .map(|l| {
+            let row = pele::util::json::parse_json(l).unwrap();
+            let m = row.as_map().unwrap();
+            (m.get("name").unwrap().js_string(), m.get("mmd").unwrap().js_string())
+        })
+        .filter(|(name, _)| name.starts_with("fc-"))
+        .collect();
     println!("| sample | median ms | p95 ms | scene parse median ms |");
     println!("|---|---:|---:|---:|");
-    for p in names {
-        let code = std::fs::read_to_string(&p).unwrap();
+    for (name, code) in samples {
         let _ = pele::render(&code);
         let mut render = Vec::new();
         let mut parse = Vec::new();
@@ -31,6 +37,6 @@ fn flowchart_sample_render_times() {
         }
         let (m, p95) = stats(render);
         let (pm, _) = stats(parse);
-        println!("| {} | {:.3} | {:.3} | {:.3} |", p.file_stem().unwrap().to_string_lossy(), m, p95, pm);
+        println!("| {} | {:.3} | {:.3} | {:.3} |", name, m, p95, pm);
     }
 }

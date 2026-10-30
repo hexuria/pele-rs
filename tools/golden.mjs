@@ -1,19 +1,20 @@
 // Dev-only oracle: builds upstream Pele at the pinned commit and writes the golden SVGs the
 // Rust port is compared against, byte for byte.
 //
-//   node pele/tools/golden.mjs <scratch-dir>
+//   node tools/golden.mjs <scratch-dir> [--all]
 //
 // <scratch-dir> receives the upstream clone and its build; nothing there is tracked. Inputs:
-//   - pele/tests/samples/*.mmd (hand-written, every type and a few errors);
+//   - tests/samples.jsonl (hand-written, every type and a few errors);
 //   - every diagram source in upstream's tests/compat specs and tests/corpus docs, pulled out
 //     the way upstream's own tests/support/corpus.ts loadCorpus() does.
-// Output: pele/tests/golden/<type>/<name>.{mmd,svg,json}. <type> is the detected type, or
-// `none` for an input no detector matches. Rendering uses render(code) with no options, as
-// app/pele/serve.mjs does. Corpus goldens are written for the types in PORTED (and `none`);
-// the samples for every type. `--all` writes every corpus golden (about 26 MB).
+// Output: tests/golden/<type>.jsonl, one line per input sorted by name:
+//   {name, source, mmd, svg | error, width, height, links, type, mermaidType}
+// <type> is the detected type, or `none` for an input no detector matches. Rendering uses
+// render(code) with no options, as app/pele/serve.mjs does. Only the types in PORTED (and
+// `none`) are written; `--all` writes every type to tests/golden-all/ (gitignored, ~26 MB).
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { basename, dirname, join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 export const UPSTREAM = "https://github.com/obsidianmd/pele";
@@ -27,7 +28,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const CRATE = resolve(HERE, "..");
 const scratch = process.argv.slice(2).find((a) => !a.startsWith("--"));
 if (!scratch) {
-  console.error("usage: node pele/tools/golden.mjs <scratch-dir>");
+  console.error("usage: node tools/golden.mjs <scratch-dir> [--all]");
   process.exit(2);
 }
 const src = join(resolve(scratch), "upstream");
@@ -57,8 +58,9 @@ const KEYWORDS = {
 };
 
 const inputs = []; // [name, code, source]
-for (const file of readdirSync(join(CRATE, "tests", "samples")).filter((f) => f.endsWith(".mmd")).sort()) {
-  inputs.push([basename(file, ".mmd"), readFileSync(join(CRATE, "tests", "samples", file), "utf8"), `samples/${file}`]);
+for (const line of readFileSync(join(CRATE, "tests", "samples.jsonl"), "utf8").split("\n").filter(Boolean)) {
+  const { name, mmd } = JSON.parse(line);
+  inputs.push([name, mmd, `samples/${name}.mmd`]);
 }
 const seen = new Set(inputs.map((i) => i[1]));
 const add = (stem, code, source, counter) => {
@@ -92,32 +94,29 @@ for (const dir of Object.keys(KEYWORDS)) {
   if (existsSync(docs)) for (const code of JSON.parse(readFileSync(docs, "utf8"))) add(`${dir}-docs`, code, `tests/corpus/${dir}-docs.json`, counter);
 }
 
-const out = join(CRATE, "tests", "golden");
+const out = join(CRATE, "tests", ALL ? "golden-all" : "golden");
 rmSync(out, { recursive: true, force: true });
-const counts = {};
+mkdirSync(out, { recursive: true });
+const byType = {};
 for (const [name, code, source] of inputs) {
-  let json;
-  let svg;
-  let type;
+  let row;
   try {
     const r = pele.render(code);
-    type = r.type;
-    svg = r.svg;
-    json = { source, type: r.type, mermaidType: r.mermaidType, width: r.width, height: r.height, links: r.links };
+    row = { name, source, mmd: code, svg: r.svg, width: r.width, height: r.height, links: r.links, type: r.type, mermaidType: r.mermaidType };
   } catch (e) {
     if (e?.name !== "PeleError") throw new Error(`${name}: ${e?.stack ?? e}`);
-    type = e.type ?? "none";
-    json = { source, error: { code: e.code, type: e.type, mermaidType: e.mermaidType, line: e.line, column: e.column, message: e.message, snippet: e.snippet } };
+    const error = { code: e.code, type: e.type, mermaidType: e.mermaidType, line: e.line, column: e.column, message: e.message, snippet: e.snippet };
+    row = { name, source, mmd: code, error, type: e.type ?? "none", mermaidType: e.mermaidType };
   }
-  if (!ALL && !PORTED.has(type) && !source.startsWith("samples/")) continue;
-  const dir = join(out, type);
-  mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, `${name}.mmd`), code);
-  if (svg !== undefined) writeFileSync(join(dir, `${name}.svg`), svg);
-  writeFileSync(join(dir, `${name}.json`), JSON.stringify(json, null, 1) + "\n");
-  const c = (counts[type] ??= { ok: 0, err: 0 });
-  if (svg !== undefined) c.ok++;
-  else c.err++;
+  if (!ALL && !PORTED.has(row.type)) continue;
+  (byType[row.type] ??= []).push(row);
 }
-for (const [type, c] of Object.entries(counts).sort()) console.log(`${type.padEnd(16)} ${c.ok} rendered, ${c.err} errors`);
-console.log(`${inputs.length} inputs, ${Object.values(counts).reduce((n, c) => n + c.ok + c.err, 0)} written`);
+let written = 0;
+for (const [type, rows] of Object.entries(byType).sort()) {
+  rows.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
+  writeFileSync(join(out, `${type}.jsonl`), rows.map((r) => JSON.stringify(r)).join("\n") + "\n");
+  const ok = rows.filter((r) => r.svg !== undefined).length;
+  console.log(`${type.padEnd(16)} ${ok} rendered, ${rows.length - ok} errors`);
+  written += rows.length;
+}
+console.log(`${inputs.length} inputs, ${written} written`);

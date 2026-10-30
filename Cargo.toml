@@ -5,6 +5,11 @@ edition = "2021"
 publish = false
 description = "A Rust port of Pele, a Mermaid renderer (see NOTICE)"
 license = "MIT"
+repository = "https://github.com/hexuria/pele-rs"
+
+[features]
+# pele::corpus: the test inputs as (name, mmd) pairs, for downstream tests.
+corpus = []
 
 [dependencies]
 url = "2.5"

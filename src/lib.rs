@@ -4,6 +4,8 @@
 //! `Scene` for a native host. Types not ported yet fail with `PeleErrorCode::NotYetPorted`.
 
 pub mod core;
+#[cfg(feature = "corpus")]
+pub mod corpus;
 pub mod detect;
 pub mod diagrams;
 pub mod errors;
