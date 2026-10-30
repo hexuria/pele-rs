@@ -58,6 +58,148 @@ pub fn num_str(v: f64) -> String {
     out
 }
 
+/// `Number.prototype.toFixed(digits)`: the exact value rounded half up (away from zero), as
+/// the spec picks the larger of two equally near candidates. Rust's own `{:.N}` breaks ties
+/// to even.
+pub fn to_fixed(x: f64, digits: usize) -> String {
+    if x.is_nan() {
+        return "NaN".into();
+    }
+    if x.abs() >= 1e21 || x.is_infinite() {
+        return num_str(x);
+    }
+    let neg = x < 0.0;
+    // Every f64 below 1e21 has an exact decimal expansion within 1100 places.
+    let exact = format!("{:.1100}", x.abs());
+    let (int, frac) = exact.split_once('.').unwrap();
+    let mut keep: Vec<u8> = int.bytes().chain(frac.bytes().take(digits)).collect();
+    if frac.as_bytes()[digits] >= b'5' {
+        let mut i = keep.len();
+        loop {
+            if i == 0 {
+                keep.insert(0, b'1');
+                break;
+            }
+            i -= 1;
+            if keep[i] == b'9' {
+                keep[i] = b'0';
+            } else {
+                keep[i] += 1;
+                break;
+            }
+        }
+    }
+    let split = keep.len() - digits;
+    let mut out = String::new();
+    let body = String::from_utf8(keep).unwrap();
+    if neg {
+        out.push('-');
+    }
+    out.push_str(&body[..split]);
+    if digits > 0 {
+        out.push('.');
+        out.push_str(&body[split..]);
+    }
+    out
+}
+
+// The exact decimal digits of |x| (no leading zeros) and the exponent of the first one, for
+// rounding to significant digits as `toPrecision` and `toExponential` do.
+fn exact_digits(x: f64) -> (Vec<u8>, i32) {
+    let exact = format!("{:.1100}", x.abs());
+    let (int, frac) = exact.split_once('.').unwrap();
+    let all: Vec<u8> = int.bytes().chain(frac.bytes()).collect();
+    let first = all.iter().position(|&d| d != b'0').unwrap_or(0);
+    let e = int.len() as i32 - 1 - first as i32;
+    let mut digits = all[first..].to_vec();
+    while digits.len() > 1 && digits.last() == Some(&b'0') {
+        digits.pop();
+    }
+    (digits, e)
+}
+
+// `p` significant digits of |x| > 0, rounded half up, and their exponent.
+fn significant(x: f64, p: usize) -> (Vec<u8>, i32) {
+    let (digits, mut e) = exact_digits(x);
+    let mut keep: Vec<u8> = digits.iter().copied().take(p).collect();
+    while keep.len() < p {
+        keep.push(b'0');
+    }
+    if digits.len() > p && digits[p] >= b'5' {
+        let mut i = p;
+        loop {
+            if i == 0 {
+                keep.insert(0, b'1');
+                keep.pop();
+                e += 1;
+                break;
+            }
+            i -= 1;
+            if keep[i] == b'9' {
+                keep[i] = b'0';
+            } else {
+                keep[i] += 1;
+                break;
+            }
+        }
+    }
+    (keep, e)
+}
+
+/// `Number.prototype.toExponential(digits)`.
+pub fn to_exponential(x: f64, digits: usize) -> String {
+    if !x.is_finite() {
+        return num_str(x);
+    }
+    let (d, e) = if x == 0.0 { (vec![b'0'; digits + 1], 0) } else { significant(x, digits + 1) };
+    let mut out = String::new();
+    if x < 0.0 {
+        out.push('-');
+    }
+    out.push(d[0] as char);
+    if digits > 0 {
+        out.push('.');
+        out.push_str(std::str::from_utf8(&d[1..]).unwrap());
+    }
+    out.push_str(&format!("e{}{}", if e < 0 { '-' } else { '+' }, e.abs()));
+    out
+}
+
+/// `Number.prototype.toPrecision(p)`.
+pub fn to_precision(x: f64, p: usize) -> String {
+    if !x.is_finite() {
+        return num_str(x);
+    }
+    let (d, e) = if x == 0.0 { (vec![b'0'; p], 0) } else { significant(x, p) };
+    let d = std::str::from_utf8(&d).unwrap();
+    let mut out = String::new();
+    if x < 0.0 {
+        out.push('-');
+    }
+    if e < -6 || e >= p as i32 {
+        out.push_str(&d[..1]);
+        if p > 1 {
+            out.push('.');
+            out.push_str(&d[1..]);
+        }
+        out.push_str(&format!("e{}{}", if e < 0 { '-' } else { '+' }, e.abs()));
+    } else if e >= 0 {
+        let k = e as usize + 1;
+        out.push_str(&d[..k]);
+        if p > k {
+            out.push('.');
+            out.push_str(&d[k..]);
+        }
+    } else {
+        out.push_str("0.");
+        for _ in 0..(-e - 1) {
+            out.push('0');
+        }
+        out.push_str(d);
+    }
+    out
+}
+
 /// `Math.round`: halves go up, towards +Infinity.
 pub fn round(x: f64) -> f64 {
     if !x.is_finite() {
@@ -329,5 +471,16 @@ mod tests {
         assert_eq!(num_str(0.1 + 0.2), "0.30000000000000004");
         assert_eq!(round(-2.5), -2.0);
         assert_eq!(round(2.5), 3.0);
+        assert_eq!(to_fixed(0.5, 0), "1");
+        assert_eq!(to_fixed(2.5, 0), "3");
+        assert_eq!(to_fixed(1.005, 2), "1.00");
+        assert_eq!(to_fixed(-1.25, 1), "-1.3");
+        assert_eq!(to_fixed(99.96, 1), "100.0");
+        assert_eq!(to_precision(123.456, 12), "123.456000000");
+        assert_eq!(to_precision(0.000001234, 2), "0.0000012");
+        assert_eq!(to_precision(1e21, 3), "1.00e+21");
+        assert_eq!(to_precision(99.99, 3), "100");
+        assert_eq!(to_exponential(12345.0, 2), "1.23e+4");
+        assert_eq!(to_exponential(0.00015, 1), "1.5e-4");
     }
 }
