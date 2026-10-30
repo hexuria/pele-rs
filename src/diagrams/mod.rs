@@ -1,6 +1,7 @@
 // The diagram types, as upstream's src/diagrams, and the part of src/types.ts's `Diagram` and
 // src/diagrams/registry.ts the port uses. A type that is not in ALL is not ported yet.
 
+pub mod class;
 pub mod common;
 pub mod cynefin;
 pub mod er;
@@ -45,7 +46,32 @@ pub struct Diagram {
 }
 
 /// Every ported diagram type.
-pub static ALL: &[&Diagram] = &[&flowchart::DIAGRAM, &er::DIAGRAM, &ishikawa::DIAGRAM, &cynefin::DIAGRAM, &venn::DIAGRAM, &swimlane::DIAGRAM, &eventmodeling::DIAGRAM, &wardley::DIAGRAM, &info::DIAGRAM, &pie::DIAGRAM, &radar::DIAGRAM, &packet::DIAGRAM, &mindmap::DIAGRAM, &kanban::DIAGRAM, &journey::DIAGRAM, &timeline::DIAGRAM, &quadrant::DIAGRAM, &xychart::DIAGRAM, &sankey::DIAGRAM, &treemap::DIAGRAM, &requirement::DIAGRAM, &railroad::DIAGRAM, &usecase::DIAGRAM];
+pub static ALL: &[&Diagram] = &[
+    &flowchart::DIAGRAM,
+    &class::DIAGRAM,
+    &er::DIAGRAM,
+    &ishikawa::DIAGRAM,
+    &cynefin::DIAGRAM,
+    &venn::DIAGRAM,
+    &swimlane::DIAGRAM,
+    &eventmodeling::DIAGRAM,
+    &wardley::DIAGRAM,
+    &info::DIAGRAM,
+    &pie::DIAGRAM,
+    &radar::DIAGRAM,
+    &packet::DIAGRAM,
+    &mindmap::DIAGRAM,
+    &kanban::DIAGRAM,
+    &journey::DIAGRAM,
+    &timeline::DIAGRAM,
+    &quadrant::DIAGRAM,
+    &xychart::DIAGRAM,
+    &sankey::DIAGRAM,
+    &treemap::DIAGRAM,
+    &requirement::DIAGRAM,
+    &railroad::DIAGRAM,
+    &usecase::DIAGRAM,
+];
 
 pub fn diagram(type_: &str) -> Option<&'static Diagram> {
     ALL.iter().copied().find(|d| d.type_ == type_)
