@@ -19,6 +19,7 @@ pub mod radar;
 pub mod railroad;
 pub mod requirement;
 pub mod sankey;
+pub mod sequence;
 pub mod state;
 pub mod swimlane;
 pub mod timeline;
@@ -49,6 +50,7 @@ pub struct Diagram {
 /// Every ported diagram type.
 pub static ALL: &[&Diagram] = &[
     &flowchart::DIAGRAM,
+    &sequence::DIAGRAM,
     &state::DIAGRAM,
     &class::DIAGRAM,
     &er::DIAGRAM,

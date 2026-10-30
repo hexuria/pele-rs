@@ -20,6 +20,7 @@ pub const DEFAULT_MAX_EDGES: usize = 5000;
 /// upstream renders is a `NotYetPorted` error, for the host to draw some other way.
 pub const PORTED: &[&str] = &[
     "flowchart",
+    "sequence",
     "state",
     "class",
     "er",

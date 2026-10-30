@@ -41,6 +41,11 @@ pub fn state() -> Vec<(String, String)> {
     pairs(include_str!("../tests/golden/state.jsonl"))
 }
 
+/// Every input upstream detects as a sequence diagram.
+pub fn sequence() -> Vec<(String, String)> {
+    pairs(include_str!("../tests/golden/sequence.jsonl"))
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
