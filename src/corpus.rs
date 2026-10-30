@@ -26,6 +26,11 @@ pub fn flowchart() -> Vec<(String, String)> {
     pairs(include_str!("../tests/golden/flowchart.jsonl"))
 }
 
+/// Every input upstream detects as an entity relationship diagram.
+pub fn er() -> Vec<(String, String)> {
+    pairs(include_str!("../tests/golden/er.jsonl"))
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
@@ -33,5 +38,6 @@ mod tests {
         assert_eq!(super::samples().len(), 63);
         assert!(super::flowchart().len() > 300);
         assert!(super::flowchart().iter().all(|(_, mmd)| !mmd.is_empty()));
+        assert!(super::er().len() > 100);
     }
 }

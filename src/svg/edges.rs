@@ -605,6 +605,28 @@ pub fn edge_ink(fill: &Fill, line: &str) -> String {
     ink(&fill.shape, "").unwrap_or("").to_string()
 }
 
+/// Markers with the page color inside them, with the fill's color there instead.
+pub fn hollow_on(markers: &str, fill: &Fill) -> String {
+    // /[";]fill:([^;"]*)/.exec(fill.shape)?.[1].trim()
+    let shape = &fill.shape;
+    let mut color = None;
+    let mut from = 0;
+    while let Some(k) = shape[from..].find("fill:") {
+        let at = from + k;
+        if at > 0 && matches!(shape.as_bytes()[at - 1], b'"' | b';') {
+            let s = at + 5;
+            let e = shape[s..].find([';', '"']).map_or(shape.len(), |q| s + q);
+            color = Some(js::trim(&shape[s..e]).to_string());
+            break;
+        }
+        from = at + 1;
+    }
+    match color {
+        Some(c) if !c.is_empty() => markers.replace(" fill=\"var(--_bg)\"", &format!(" fill=\"{}\"", c)),
+        _ => markers.to_string(),
+    }
+}
+
 /// The ink of the innermost fill that holds the whole edge, Some("") for a casing where it
 /// crosses a border, or None off fills.
 pub fn over_fills(d: &str, tips: &[f64], fills: &[Fill], line: &str, tokens: Option<&[f64]>) -> Option<String> {
