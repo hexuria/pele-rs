@@ -59,6 +59,16 @@ the SVG upstream gives, and the same error (code, type, line, column, message, s
   passes read the sorted order; `compound.ts` caches layered results and returns the same
   objects. `addSubGraph` compares `idText === titleText` by identity (a header with no
   `[title]`).
+- **`Math.hypot`** is V8's: scaled by the larger value, with Kahan summation (`js::hypot`).
+  Rust's `f64::hypot` can differ in the last bit, which iterative layouts (venn) carry forward.
+- **Default `sort()`** on strings compares UTF-16 code units, not code points (`venn::sort16`).
+- **`\W` and `.length`** count UTF-16 units: `label.replace(/\W/g, '_')` gives two underscores
+  for a character outside the BMP (usecase generated ids).
+- **Character classes:** `[\w-:]` is `\w`, `-` and `:` (Annex B: a class escape cannot start a
+  range), not the range `-` to `:` (architecture icons).
+- **Object key order:** `JSON.parse` puts integer-like keys first; usecase JSON nodes keep each
+  key where it was first written, with its last value, which is what upstream's second walk
+  over the text recovers.
 - **`new URL()`** is the `url` crate (WHATWG): `https://example.com` becomes
   `https://example.com/`. `decodeURIComponent` throws on bad UTF-8 or stray `%`.
 - **`JSON.parse`** for `%%{init}%%`: strict JSON after `'` → `"`; anything else is ignored.
@@ -85,6 +95,9 @@ the SVG upstream gives, and the same error (code, type, line, column, message, s
     `title_before` takes the lookahead as a predicate.
   - `common/fit_width.rs`: with no `maxWidth`, every fitting step draws once at the natural
     width; the functions keep upstream's shape so renderers port line for line.
+- **Fitting with no `maxWidth`:** `turnToFit`, `tighten` and `fitWidth` draw once at the natural
+  width, so the down-running drawings (`verticalCauses`, `verticalEventModel`, folded railroad
+  sequences) are never reached and are not ported.
 - **Flowchart variants:** `flowchart/render.rs` has the `FlowVariant` hook (`prepare`, `layout`,
   `draw_group`, `filled_box`) for swimlane, agentflow, eventmodeling and wardley.
 - The Scene and Rox's `app/src/mermaid/draw.rs` cover the 11 elements plus `title`, `desc`,
