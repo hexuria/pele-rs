@@ -81,13 +81,7 @@ pub fn label_svg(label: &Label, cx: f64, cy: f64, attrs: &str) -> String {
     let mut top = cy - label.height / 2.0;
 
     if lines.len() == 1 && lines[0].len() == 1 && lines[0][0].style == 0 {
-        return format!(
-            "<text{} x=\"{}\" y=\"{}\" text-anchor=\"middle\">{}</text>",
-            attrs,
-            num(cx),
-            num(top + lh / 2.0 + shift),
-            esc(&lines[0][0].text)
-        );
+        return format!("<text{} x=\"{}\" y=\"{}\" text-anchor=\"middle\">{}</text>", attrs, num(cx), num(top + lh / 2.0 + shift), esc(&lines[0][0].text));
     }
 
     let shared = shared_style(label);

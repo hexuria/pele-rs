@@ -397,7 +397,8 @@ pub fn route_crossings(nodes: &[CNode], edges: &[CEdge], style: Style) -> i64 {
     }
     // Edges merging into a shared endpoint run do not count as crossings.
     let mut runs = vec![0f64; edges.len() * 8];
-    let in_line = |r: &[f64], a: usize, b: usize, c: usize| ((r[a] - r[b]).abs() < IN_LINE && (r[a] - r[c]).abs() < IN_LINE) || ((r[a + 1] - r[b + 1]).abs() < IN_LINE && (r[a + 1] - r[c + 1]).abs() < IN_LINE);
+    let in_line =
+        |r: &[f64], a: usize, b: usize, c: usize| ((r[a] - r[b]).abs() < IN_LINE && (r[a] - r[c]).abs() < IN_LINE) || ((r[a + 1] - r[b + 1]).abs() < IN_LINE && (r[a + 1] - r[c + 1]).abs() < IN_LINE);
     for (ei, e) in edges.iter().enumerate() {
         let r = &e.route;
         if r.len() < 6 {
@@ -1124,8 +1125,28 @@ fn place(ctx: &mut Ctx, opt: &LayeredOptions, ordered: bool, laid: &mut HashMap<
         let box_h = content_h + pad_top + group.as_ref().map_or(0.0, |g| g.pad_bottom);
         let off_x = (box_w - content_w) / 2.0;
         let off_y = pad_top;
-        let tx = |lx: f64, ly: f64| off_x + if vert { lx } else if flip { size.height - ly } else { ly };
-        let ty = |lx: f64, ly: f64| off_y + if vert { if flip { size.height - ly } else { ly } } else { lx };
+        let tx = |lx: f64, ly: f64| {
+            off_x
+                + if vert {
+                    lx
+                } else if flip {
+                    size.height - ly
+                } else {
+                    ly
+                }
+        };
+        let ty = |lx: f64, ly: f64| {
+            off_y
+                + if vert {
+                    if flip {
+                        size.height - ly
+                    } else {
+                        ly
+                    }
+                } else {
+                    lx
+                }
+        };
         let axis = if vert { 0.0 } else { 1.0 };
         let convert = |points: &[f64]| {
             let mut out = Vec::with_capacity(points.len() / 2 * 3);

@@ -39,7 +39,10 @@ pub struct Scene {
 pub enum Paint {
     None,
     /// `var(--name, fallback)`: `name` without the leading `--`.
-    Var { name: String, fallback: Option<String> },
+    Var {
+        name: String,
+        fallback: Option<String>,
+    },
     Literal(String),
 }
 

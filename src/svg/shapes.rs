@@ -19,9 +19,61 @@ const CORNER: f64 = 12.0;
 
 // The shapes upstream defines; any other name draws as `rect`.
 const NAMES: [&str; 55] = [
-    "rect", "rounded", "stadium", "fr-rect", "cyl", "circle", "dbl-circ", "ellipse", "diam", "hex", "odd", "lean-r", "lean-l", "trap-b", "trap-t", "text", "sm-circ", "f-circ", "fr-circ", "fork", "notch-rect", "lin-rect",
-    "div-rect", "win-pane", "tri", "flip-tri", "sl-rect", "notch-pent", "hourglass", "delay", "h-cyl", "cross-circ", "st-rect", "doc", "flag", "datastore", "folder", "bucket", "console", "browser", "person", "bang",
-    "cloud", "brace", "brace-r", "braces", "bolt", "lin-cyl", "curv-trap", "docs", "bow-rect", "tag-rect", "tag-doc", "lin-doc", "collapsedGroup",
+    "rect",
+    "rounded",
+    "stadium",
+    "fr-rect",
+    "cyl",
+    "circle",
+    "dbl-circ",
+    "ellipse",
+    "diam",
+    "hex",
+    "odd",
+    "lean-r",
+    "lean-l",
+    "trap-b",
+    "trap-t",
+    "text",
+    "sm-circ",
+    "f-circ",
+    "fr-circ",
+    "fork",
+    "notch-rect",
+    "lin-rect",
+    "div-rect",
+    "win-pane",
+    "tri",
+    "flip-tri",
+    "sl-rect",
+    "notch-pent",
+    "hourglass",
+    "delay",
+    "h-cyl",
+    "cross-circ",
+    "st-rect",
+    "doc",
+    "flag",
+    "datastore",
+    "folder",
+    "bucket",
+    "console",
+    "browser",
+    "person",
+    "bang",
+    "cloud",
+    "brace",
+    "brace-r",
+    "braces",
+    "bolt",
+    "lin-cyl",
+    "curv-trap",
+    "docs",
+    "bow-rect",
+    "tag-rect",
+    "tag-doc",
+    "lin-doc",
+    "collapsedGroup",
 ];
 
 fn known(shape: &str) -> bool {
@@ -198,19 +250,7 @@ pub fn shape_size(shape: &str, tw: f64, th: f64) -> ShapeSize {
 fn brace(x: f64, h: f64, dir: f64, line: &str) -> String {
     let y = h / 2.0;
     let k = 6.0 * dir;
-    format!(
-        "<path d=\"M{},{}q{},0 {},6V-6q0,6 {},6q{},0 {},6V{}q0,6 {},6\" fill=\"none\"{}/>",
-        num(x),
-        num(-y),
-        num(k),
-        num(k),
-        num(k),
-        num(-k),
-        num(-k),
-        num(y - 6.0),
-        num(-k),
-        line
-    )
+    format!("<path d=\"M{},{}q{},0 {},6V-6q0,6 {},6q{},0 {},6V{}q0,6 {},6\" fill=\"none\"{}/>", num(x), num(-y), num(k), num(k), num(k), num(-k), num(-k), num(y - 6.0), num(-k), line)
 }
 
 fn wave(w: f64, h: f64, a: &str) -> String {
@@ -222,20 +262,7 @@ fn wave(w: f64, h: f64, a: &str) -> String {
 }
 
 fn cyl_body(rx: f64, ry: f64, top: f64, bottom: f64) -> String {
-    format!(
-        "M{},{}A{},{} 0 0 1 {},{}V{}A{},{} 0 0 1 {},{}Z",
-        num(-rx),
-        num(top),
-        num(rx),
-        num(ry),
-        num(rx),
-        num(top),
-        num(bottom),
-        num(rx),
-        num(ry),
-        num(-rx),
-        num(bottom)
-    )
+    format!("M{},{}A{},{} 0 0 1 {},{}V{}A{},{} 0 0 1 {},{}Z", num(-rx), num(top), num(rx), num(ry), num(rx), num(top), num(bottom), num(rx), num(ry), num(-rx), num(bottom))
 }
 
 pub fn draw_shape(shape: &str, w: f64, h: f64, a: &str, line: &str) -> String {
@@ -339,7 +366,10 @@ pub fn draw_shape(shape: &str, w: f64, h: f64, a: &str, line: &str) -> String {
             let q = w / 4.0;
             format!("<path d=\"M{},{}q{},-10 {},0t{},0V{}q{},10 {},0t{},0Z\"{}/>", num(-x), num(-y), num(q), num(2.0 * q), num(2.0 * q), num(y), num(-q), num(-2.0 * q), num(-2.0 * q), a)
         }
-        "datastore" => rect(w, h, &a.replacen("stroke=\"var(--_b)\"", "stroke=\"none\"", 1), "") + &format!("<path d=\"M{},{}H{}M{},{}H{}\" fill=\"none\"{}/>", num(-w / 2.0), num(-h / 2.0), num(w / 2.0), num(-w / 2.0), num(h / 2.0), num(w / 2.0), line),
+        "datastore" => {
+            rect(w, h, &a.replacen("stroke=\"var(--_b)\"", "stroke=\"none\"", 1), "")
+                + &format!("<path d=\"M{},{}H{}M{},{}H{}\" fill=\"none\"{}/>", num(-w / 2.0), num(-h / 2.0), num(w / 2.0), num(-w / 2.0), num(h / 2.0), num(w / 2.0), line)
+        }
         "folder" => {
             let x = w / 2.0;
             let y = h / 2.0;
@@ -351,8 +381,24 @@ pub fn draw_shape(shape: &str, w: f64, h: f64, a: &str, line: &str) -> String {
             let y = h / 2.0;
             let ry = 5.0;
             let taper = h / 6.0;
-            path(&format!("M{},{}A{},{} 0 0 1 {},{}L{},{}A{},{} 0 0 1 {},{}Z", num(-x), num(-y + ry), num(x), num(ry), num(x), num(-y + ry), num(x - taper), num(y - ry), num(x - taper), num(ry), num(-x + taper), num(y - ry)), a)
-                + &format!("<path d=\"M{},{}A{},{} 0 0 0 {},{}\" fill=\"none\"{}/>", num(-x), num(-y + ry), num(x), num(ry), num(x), num(-y + ry), line)
+            path(
+                &format!(
+                    "M{},{}A{},{} 0 0 1 {},{}L{},{}A{},{} 0 0 1 {},{}Z",
+                    num(-x),
+                    num(-y + ry),
+                    num(x),
+                    num(ry),
+                    num(x),
+                    num(-y + ry),
+                    num(x - taper),
+                    num(y - ry),
+                    num(x - taper),
+                    num(ry),
+                    num(-x + taper),
+                    num(y - ry)
+                ),
+                a,
+            ) + &format!("<path d=\"M{},{}A{},{} 0 0 0 {},{}\" fill=\"none\"{}/>", num(-x), num(-y + ry), num(x), num(ry), num(x), num(-y + ry), line)
         }
         "console" => {
             rect(w, h, &rounded(a), "")
@@ -377,7 +423,8 @@ pub fn draw_shape(shape: &str, w: f64, h: f64, a: &str, line: &str) -> String {
         }
         "person" => {
             let top = -h / 2.0;
-            format!("<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" rx=\"12\"{}/>", num(-w / 2.0), num(top + 26.0), num(w), num(h - 26.0), a) + &format!("<circle cy=\"{}\" r=\"13\"{}/>", num(top + 14.0), a)
+            format!("<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" rx=\"12\"{}/>", num(-w / 2.0), num(top + 26.0), num(w), num(h - 26.0), a)
+                + &format!("<circle cy=\"{}\" r=\"13\"{}/>", num(top + 14.0), a)
         }
         "bang" => {
             let spikes = 14;

@@ -38,7 +38,8 @@ pub fn font_style(size: f64) -> String {
     )
 }
 
-const SHAPE_PROPS: [&str; 12] = ["fill", "fill-opacity", "stroke", "stroke-width", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "opacity", "rx", "ry"];
+const SHAPE_PROPS: [&str; 12] =
+    ["fill", "fill-opacity", "stroke", "stroke-width", "stroke-dasharray", "stroke-dashoffset", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "opacity", "rx", "ry"];
 const TEXT_PROPS: [&str; 9] = ["color", "font-size", "font-family", "font-weight", "font-style", "text-decoration", "letter-spacing", "word-spacing", "opacity"];
 
 fn unsafe_value(value: &str) -> bool {
@@ -54,13 +55,7 @@ fn unsafe_value(value: &str) -> bool {
         }
         false
     };
-    call("url")
-        || call("expression")
-        || v.contains("javascript:")
-        || v.contains(['<', '>', '{', '}', ';', '\\'])
-        || v.contains("@import")
-        || v.contains("image-set")
-        || v.contains("/*")
+    call("url") || call("expression") || v.contains("javascript:") || v.contains(['<', '>', '{', '}', ';', '\\']) || v.contains("@import") || v.contains("image-set") || v.contains("/*")
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]

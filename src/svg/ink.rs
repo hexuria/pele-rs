@@ -155,7 +155,13 @@ fn args(body: &str, hsl: bool) -> Option<Vec<String>> {
         let raw: Vec<&str> = js::trim(main).split(',').collect();
         for (k, item) in list.iter_mut().enumerate() {
             let r = raw[k];
-            *item = if k == 0 { js::trim_end(r).to_string() } else if k == n - 1 { js::trim_start(r).to_string() } else { js::trim(r).to_string() };
+            *item = if k == 0 {
+                js::trim_end(r).to_string()
+            } else if k == n - 1 {
+                js::trim_start(r).to_string()
+            } else {
+                js::trim(r).to_string()
+            };
             if n == 1 {
                 *item = r.to_string();
             }

@@ -76,15 +76,7 @@ pub fn is_space_u(c: u32) -> bool {
     if c < 128 {
         return c == 32 || (9..=13).contains(&c);
     }
-    c == 0xa0
-        || c == 0x1680
-        || (0x2000..=0x200a).contains(&c)
-        || c == 0x2028
-        || c == 0x2029
-        || c == 0x202f
-        || c == 0x205f
-        || c == 0x3000
-        || c == 0xfeff
+    c == 0xa0 || c == 0x1680 || (0x2000..=0x200a).contains(&c) || c == 0x2028 || c == 0x2029 || c == 0x202f || c == 0x205f || c == 0x3000 || c == 0xfeff
 }
 
 pub fn is_space(c: char) -> bool {

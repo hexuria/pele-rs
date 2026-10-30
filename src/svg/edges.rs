@@ -81,8 +81,20 @@ pub fn route_path(route: &[f64], curve: Option<&str>, start_trim: f64, end_trim:
             if (x - xs[last]).abs() >= 0.01 && (y - ys[last]).abs() >= 0.01 {
                 let px = xs[last];
                 let py = ys[last];
-                let my = if curve == Some("stepBefore") { py } else if curve == Some("stepAfter") { y } else { (py + y) / 2.0 };
-                let mx = if curve == Some("stepBefore") { px } else if curve == Some("stepAfter") { x } else { (px + x) / 2.0 };
+                let my = if curve == Some("stepBefore") {
+                    py
+                } else if curve == Some("stepAfter") {
+                    y
+                } else {
+                    (py + y) / 2.0
+                };
+                let mx = if curve == Some("stepBefore") {
+                    px
+                } else if curve == Some("stepAfter") {
+                    x
+                } else {
+                    (px + x) / 2.0
+                };
                 let turns = if axis == 0.0 { [px, my, x, my] } else { [mx, py, mx, y] };
                 let mut k = 0;
                 while k < 4 {

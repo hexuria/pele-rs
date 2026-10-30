@@ -11,14 +11,33 @@ use crate::util::chars::is_space;
 const ID: &[u8] = &[t::NUM, t::NODE_STRING, t::DOWN, t::MINUS, t::DEFAULT, t::COMMA, t::COLON, t::AMP, t::BRKT, t::MULT, t::UNICODE_TEXT];
 const ALPHANUM: &[u8] = &[t::NUM, t::UNICODE_TEXT, t::NODE_STRING, t::DIR, t::DOWN, t::MINUS, t::COMMA, t::COLON, t::AMP, t::BRKT, t::MULT];
 const NO_TAGS: &[u8] = &[
-    t::NUM, t::NODE_STRING, t::SPACE, t::MINUS, t::AMP, t::UNICODE_TEXT, t::COLON, t::MULT, t::BRKT, t::STYLE, t::LINKSTYLE, t::CLASSDEF, t::CLASS, t::CLICK, t::GRAPH, t::DIR, t::subgraph, t::end, t::DOWN, t::UP, t::START_LINK,
+    t::NUM,
+    t::NODE_STRING,
+    t::SPACE,
+    t::MINUS,
+    t::AMP,
+    t::UNICODE_TEXT,
+    t::COLON,
+    t::MULT,
+    t::BRKT,
+    t::STYLE,
+    t::LINKSTYLE,
+    t::CLASSDEF,
+    t::CLASS,
+    t::CLICK,
+    t::GRAPH,
+    t::DIR,
+    t::subgraph,
+    t::end,
+    t::DOWN,
+    t::UP,
+    t::START_LINK,
 ];
 const STYLE_PART: &[u8] = &[t::NUM, t::NODE_STRING, t::COLON, t::SPACE, t::BRKT, t::STYLE];
 
 const TEXT_TOKENS: &str = "'UNICODE_TEXT', 'TEXT', 'TAGSTART'";
 const DIRECTIONS: [&str; 5] = ["TB", "BT", "RL", "LR", "TD"];
-const STATEMENT_START: &str =
-    "'SEMI', 'NEWLINE', 'SPACE', 'EOF', 'subgraph', 'acc_title', 'acc_descr', 'acc_descr_multiline_value', 'STYLE', 'LINKSTYLE', 'CLASSDEF', 'CLASS', 'CLICK', 'NODE_STRING'";
+const STATEMENT_START: &str = "'SEMI', 'NEWLINE', 'SPACE', 'EOF', 'subgraph', 'acc_title', 'acc_descr', 'acc_descr_multiline_value', 'STYLE', 'LINKSTYLE', 'CLASSDEF', 'CLASS', 'CLICK', 'NODE_STRING'";
 
 struct Frame {
     id: Option<FlowText>,

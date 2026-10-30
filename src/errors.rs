@@ -166,18 +166,6 @@ fn trim_end16(s: &[u16]) -> &[u16] {
 
 pub fn syntax_error(type_: &str, src: &[u16], offset: usize, detail: &str, lexical: bool) -> PeleError {
     let loc = locate(src, offset);
-    let message = if lexical {
-        format!("Lexical error on line {}. Unrecognized text.\n{}", loc.line, loc.snippet)
-    } else {
-        format!("Parse error on line {}:\n{}\n{}", loc.line, loc.snippet, detail)
-    };
-    PeleError {
-        message,
-        code: PeleErrorCode::Syntax,
-        type_: Some(type_.to_string()),
-        mermaid_type: None,
-        line: loc.line,
-        column: loc.column,
-        snippet: loc.snippet,
-    }
+    let message = if lexical { format!("Lexical error on line {}. Unrecognized text.\n{}", loc.line, loc.snippet) } else { format!("Parse error on line {}:\n{}\n{}", loc.line, loc.snippet, detail) };
+    PeleError { message, code: PeleErrorCode::Syntax, type_: Some(type_.to_string()), mermaid_type: None, line: loc.line, column: loc.column, snippet: loc.snippet }
 }

@@ -56,11 +56,7 @@ impl Value {
             Value::Bool(b) => b.to_string(),
             Value::Num(n) => js::num_str(*n),
             Value::Str(s) => s.clone(),
-            Value::Seq(items) => items
-                .iter()
-                .map(|v| if matches!(v, Value::Null) { String::new() } else { v.js_string() })
-                .collect::<Vec<_>>()
-                .join(","),
+            Value::Seq(items) => items.iter().map(|v| if matches!(v, Value::Null) { String::new() } else { v.js_string() }).collect::<Vec<_>>().join(","),
             Value::Map(_) => "[object Object]".into(),
         }
     }
@@ -434,7 +430,13 @@ fn unquote_double(body: &str) -> R<String> {
         let e = s.get(i).copied();
         match e {
             Some(e @ ('x' | 'u' | 'U')) => {
-                let len = if e == 'x' { 2 } else if e == 'u' { 4 } else { 8 };
+                let len = if e == 'x' {
+                    2
+                } else if e == 'u' {
+                    4
+                } else {
+                    8
+                };
                 let hex: String = s[(i + 1).min(s.len())..(i + 1 + len).min(s.len())].iter().collect();
                 let code = js::parse_int(&hex, 16);
                 match char::from_u32(code as u32).filter(|_| code.is_finite() && code >= 0.0) {
@@ -598,7 +600,13 @@ fn strip_comment(s: &[char]) -> &[char] {
 
 fn block_scalar(r: &mut Reader, header: &[char], parent_indent: isize) -> String {
     let folded = header[0] == '>';
-    let chomp = if header.contains(&'-') { '-' } else if header.contains(&'+') { '+' } else { ' ' };
+    let chomp = if header.contains(&'-') {
+        '-'
+    } else if header.contains(&'+') {
+        '+'
+    } else {
+        ' '
+    };
     let explicit = header.iter().find(|c| ('1'..='9').contains(*c));
     let mut indent: isize = match explicit {
         Some(c) => parent_indent + c.to_digit(10).unwrap() as isize,

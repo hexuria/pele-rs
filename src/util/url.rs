@@ -93,7 +93,9 @@ fn ws_escapes(s: &str) -> (String, bool) {
         };
         if lead > 0 {
             let j = i + lead;
-            let tail = if b.get(j) == Some(&b'%') && ((b.get(j + 1) == Some(&b'6') && matches!(b.get(j + 2), Some(b'e' | b'E'))) || (b.get(j + 1) == Some(&b'7') && matches!(b.get(j + 2), Some(b'2' | b'4')))) {
+            let tail = if b.get(j) == Some(&b'%')
+                && ((b.get(j + 1) == Some(&b'6') && matches!(b.get(j + 2), Some(b'e' | b'E'))) || (b.get(j + 1) == Some(&b'7') && matches!(b.get(j + 2), Some(b'2' | b'4'))))
+            {
                 3
             } else if matches!(b.get(j), Some(b'n' | b'r' | b't')) {
                 1

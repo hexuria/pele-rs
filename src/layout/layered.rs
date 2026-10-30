@@ -652,11 +652,8 @@ pub fn layered(nodes: &mut [LNode], edges: &mut [LEdge], opt: &LayeredOptions) -
     }
     // An edge is cut where it passes a rank that holds something, and each piece crosses one gap.
     let mut piece_start = vec![0usize; m + 1];
-    let mut pieces: Option<Pieces> = if opt.tracks || (efk.is_some() && !opt.straight) {
-        Some(Pieces { from: vec![], to: vec![], rank: vec![], lower: vec![], track: vec![], levels: vec![], wide: vec![] })
-    } else {
-        None
-    };
+    let mut pieces: Option<Pieces> =
+        if opt.tracks || (efk.is_some() && !opt.straight) { Some(Pieces { from: vec![], to: vec![], rank: vec![], lower: vec![], track: vec![], levels: vec![], wide: vec![] }) } else { None };
     let mut track_count = vec![0i64; max_rank + 1];
     if let Some(p) = pieces.as_mut() {
         for ei in 0..m {
@@ -1279,11 +1276,18 @@ fn align_labels(g: &Graph, nodes: &[LNode], xs: &mut [f64], free: &[Vec<i64>; 2]
         let r = g.rank[v] as usize;
         let s = g.layer_start[r];
         let i = s + g.pos[v];
-        let clear = |other: usize| g.w[other] / 2.0 + g.w[v] / 2.0 + if g.kind[other] == NODE { opt.node_sep / 2.0 + sep / 2.0 } else if g.kind[other] == g.kind[v] { sep } else { sep / 2.0 };
-        (
-            if i > s { xs[g.order[i - 1]] + clear(g.order[i - 1]) } else { f64::NEG_INFINITY },
-            if i + 1 < g.layer_start[r + 1] { xs[g.order[i + 1]] - clear(g.order[i + 1]) } else { f64::INFINITY },
-        )
+        let clear = |other: usize| {
+            g.w[other] / 2.0
+                + g.w[v] / 2.0
+                + if g.kind[other] == NODE {
+                    opt.node_sep / 2.0 + sep / 2.0
+                } else if g.kind[other] == g.kind[v] {
+                    sep
+                } else {
+                    sep / 2.0
+                }
+        };
+        (if i > s { xs[g.order[i - 1]] + clear(g.order[i - 1]) } else { f64::NEG_INFINITY }, if i + 1 < g.layer_start[r + 1] { xs[g.order[i + 1]] - clear(g.order[i + 1]) } else { f64::INFINITY })
     };
     // The place between `lo` and `hi` that is in line with one of two ends, or else nearest the first choice.
     let choose = |x: f64, up: (f64, i64), down: (f64, i64), lo: f64, hi: f64| -> f64 {
