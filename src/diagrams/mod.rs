@@ -2,6 +2,7 @@
 // src/diagrams/registry.ts the port uses. A type that is not in ALL is not ported yet.
 
 pub mod common;
+pub mod cynefin;
 pub mod flowchart;
 pub mod ishikawa;
 
@@ -24,7 +25,7 @@ pub struct Diagram {
 }
 
 /// Every ported diagram type.
-pub static ALL: &[&Diagram] = &[&flowchart::DIAGRAM, &ishikawa::DIAGRAM];
+pub static ALL: &[&Diagram] = &[&flowchart::DIAGRAM, &ishikawa::DIAGRAM, &cynefin::DIAGRAM];
 
 pub fn diagram(type_: &str) -> Option<&'static Diagram> {
     ALL.iter().copied().find(|d| d.type_ == type_)
