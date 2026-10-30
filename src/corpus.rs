@@ -36,6 +36,11 @@ pub fn class_diagram() -> Vec<(String, String)> {
     pairs(include_str!("../tests/golden/class.jsonl"))
 }
 
+/// Every input upstream detects as a state diagram.
+pub fn state() -> Vec<(String, String)> {
+    pairs(include_str!("../tests/golden/state.jsonl"))
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
