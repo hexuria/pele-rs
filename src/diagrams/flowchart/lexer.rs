@@ -35,11 +35,11 @@ enum S {
 
 const NODE_CHARS: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"#$%&'*+.`?\\_/";
 
-fn node_char(c: u32) -> bool {
+pub(crate) fn node_char(c: u32) -> bool {
     c < 128 && NODE_CHARS.as_bytes().contains(&(c as u8))
 }
 
-fn is_line_end(c: u32) -> bool {
+pub(crate) fn is_line_end(c: u32) -> bool {
     c == 10 || c == 13 || c == 0x2028 || c == 0x2029
 }
 
@@ -55,13 +55,13 @@ enum Re {
     InvisLink,
 }
 
-struct Lx<'a> {
-    src: &'a [u16],
-    n: usize,
+pub(crate) struct Lx<'a> {
+    pub src: &'a [u16],
+    pub n: usize,
 }
 
 impl Lx<'_> {
-    fn c(&self, i: usize) -> u32 {
+    pub(crate) fn c(&self, i: usize) -> u32 {
         if i < self.n {
             self.src[i] as u32
         } else {
@@ -69,19 +69,19 @@ impl Lx<'_> {
         }
     }
 
-    fn ws(&self, mut q: usize) -> usize {
+    pub(crate) fn ws(&self, mut q: usize) -> usize {
         while q < self.n && is_space(self.c(q)) {
             q += 1;
         }
         q
     }
 
-    fn starts_with(&self, word: &str, p: usize) -> bool {
+    pub(crate) fn starts_with(&self, word: &str, p: usize) -> bool {
         let w: Vec<u16> = word.encode_utf16().collect();
         p + w.len() <= self.n && self.src[p..p + w.len()] == w[..]
     }
 
-    fn lit(&self, q: usize, word: &str) -> Option<usize> {
+    pub(crate) fn lit(&self, q: usize, word: &str) -> Option<usize> {
         if self.starts_with(word, q) {
             Some(q + word.len())
         } else {
@@ -149,7 +149,7 @@ impl Lx<'_> {
     }
 
     /// /word\s*:\s*/ and the like: `word`, blanks, an optional `sep`, blanks.
-    fn word_sep(&self, p: usize, word: &str, sep: u32) -> Option<usize> {
+    pub(crate) fn word_sep(&self, p: usize, word: &str, sep: u32) -> Option<usize> {
         let q = self.ws(self.lit(p, word)?);
         if self.c(q) != sep {
             return None;
@@ -158,7 +158,7 @@ impl Lx<'_> {
     }
 
     /// /word\s+/
-    fn word_space(&self, p: usize, word: &str) -> Option<usize> {
+    pub(crate) fn word_space(&self, p: usize, word: &str) -> Option<usize> {
         let q = self.lit(p, word)?;
         let e = self.ws(q);
         if e == q {
@@ -169,12 +169,12 @@ impl Lx<'_> {
     }
 
     /// /(?:\r?\n)*\s*\n/: the whitespace from p, up to and with its last line break.
-    fn nodir(&self, p: usize) -> Option<usize> {
+    pub(crate) fn nodir(&self, p: usize) -> Option<usize> {
         let e = self.ws(p);
         (p..e).rev().find(|&i| self.c(i) == 10).map(|i| i + 1)
     }
 
-    fn dir(&self, p: usize) -> Option<usize> {
+    pub(crate) fn dir(&self, p: usize) -> Option<usize> {
         let q = self.ws(p);
         for d in ["LR", "RL", "TB", "BT", "TD", "BR"] {
             if self.starts_with(d, q) && !is_word(self.c(q + 2)) {
@@ -184,7 +184,7 @@ impl Lx<'_> {
         None
     }
 
-    fn dir_sym(&self, p: usize) -> Option<usize> {
+    pub(crate) fn dir_sym(&self, p: usize) -> Option<usize> {
         let q = self.ws(p);
         let c = self.c(q);
         if c == 60 || c == 62 || c == 94 {
@@ -194,7 +194,7 @@ impl Lx<'_> {
         }
     }
 
-    fn dir_v(&self, p: usize) -> Option<usize> {
+    pub(crate) fn dir_v(&self, p: usize) -> Option<usize> {
         let q = self.ws(p);
         if self.c(q) == 118 && !is_word(self.c(q + 1)) {
             Some(q + 1)
@@ -204,7 +204,7 @@ impl Lx<'_> {
     }
 
     /// /.*direction\s+XX[^\n]*/y
-    fn direction(&self, p: usize, dir: &str) -> Option<usize> {
+    pub(crate) fn direction(&self, p: usize, dir: &str) -> Option<usize> {
         let mut line_end = p;
         while line_end < self.n && !is_line_end(self.c(line_end)) {
             line_end += 1;
@@ -261,7 +261,7 @@ impl Lx<'_> {
         }
     }
 
-    fn index_of(&self, ch: u32, from: usize) -> Option<usize> {
+    pub(crate) fn index_of(&self, ch: u32, from: usize) -> Option<usize> {
         (from..self.n).find(|&i| self.c(i) == ch)
     }
 }
