@@ -2,6 +2,7 @@
 // src/diagrams/registry.ts the port uses. A type that is not in ALL is not ported yet.
 
 pub mod block;
+pub mod c4;
 pub mod class;
 pub mod common;
 pub mod cynefin;
@@ -83,6 +84,7 @@ pub static ALL: &[&Diagram] = &[
     &git::DIAGRAM,
     &gantt::DIAGRAM,
     &block::DIAGRAM,
+    &c4::DIAGRAM,
 ];
 
 pub fn diagram(type_: &str) -> Option<&'static Diagram> {
