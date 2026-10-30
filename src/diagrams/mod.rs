@@ -1,6 +1,7 @@
 // The diagram types, as upstream's src/diagrams, and the part of src/types.ts's `Diagram` and
 // src/diagrams/registry.ts the port uses. A type that is not in ALL is not ported yet.
 
+pub mod block;
 pub mod class;
 pub mod common;
 pub mod cynefin;
@@ -81,6 +82,7 @@ pub static ALL: &[&Diagram] = &[
     &treeview::DIAGRAM,
     &git::DIAGRAM,
     &gantt::DIAGRAM,
+    &block::DIAGRAM,
 ];
 
 pub fn diagram(type_: &str) -> Option<&'static Diagram> {
