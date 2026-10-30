@@ -21,7 +21,7 @@ export const UPSTREAM = "https://github.com/obsidianmd/pele";
 export const PIN = "36e584d59152181927e0d8bf70fddcd2a5f33d6c"; // main after 1.12.0 (1.12.0-8-g36e584d)
 
 // Types the Rust port covers; a later phase adds its types here and reruns the script.
-const PORTED = new Set(["flowchart", "ishikawa", "cynefin", "venn", "none"]);
+const PORTED = new Set(["flowchart", "ishikawa", "cynefin", "venn", "swimlane", "none"]);
 const ALL = process.argv.includes("--all");
 
 const HERE = dirname(fileURLToPath(import.meta.url));
