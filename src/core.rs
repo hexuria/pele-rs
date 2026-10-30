@@ -51,6 +51,7 @@ pub const PORTED: &[&str] = &[
     "block",
     "c4",
     "agentflow",
+    "architecture",
 ];
 
 fn tag(mut error: PeleError, type_: &str, mermaid_type: &str) -> PeleError {

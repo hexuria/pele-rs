@@ -81,6 +81,7 @@ pub fn all() -> Vec<(&'static str, Vec<(String, String)>)> {
         ("block", include_str!("../tests/golden/block.jsonl")),
         ("c4", include_str!("../tests/golden/c4.jsonl")),
         ("agentflow", include_str!("../tests/golden/agentflow.jsonl")),
+        ("architecture", include_str!("../tests/golden/architecture.jsonl")),
     ]
     .into_iter()
     .map(|(ty, jsonl)| (ty, pairs(jsonl)))

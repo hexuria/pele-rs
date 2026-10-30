@@ -2,6 +2,7 @@
 // src/diagrams/registry.ts the port uses. A type that is not in ALL is not ported yet.
 
 pub mod agentflow;
+pub mod architecture;
 pub mod block;
 pub mod c4;
 pub mod class;
@@ -87,6 +88,7 @@ pub static ALL: &[&Diagram] = &[
     &block::DIAGRAM,
     &c4::DIAGRAM,
     &agentflow::DIAGRAM,
+    &architecture::DIAGRAM,
 ];
 
 pub fn diagram(type_: &str) -> Option<&'static Diagram> {
